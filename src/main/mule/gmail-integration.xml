@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="04066409-549c-42c1-9657-5aad8c369606" >
+		<email:smtp-connection host="smtp.gmail.com" user="maravinthan17@gmail.com" password="idpulqgenjzaesuj" >
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<flow name="gmail-integrationFlow" doc:id="fbef87d0-6f18-4d8d-82b0-670c9e9f1d10" >
+		<scheduler doc:name="Scheduler" doc:id="eb148c90-9444-4a30-9c57-44fa07aa9c2e" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="MINUTES"/>
+			</scheduling-strategy>
+		</scheduler>
+		<logger level="INFO" doc:name="Logger" doc:id="d0e48c7d-141c-42b6-a536-906d0d974c78" message="---------------Scheduler Triggered-----------------"/>
+		<set-variable value='#["Create POC on AnypointMQ ASAP"]' doc:name="Email_Body" doc:id="321a20d1-4ee6-489b-9d02-47394ff013cf" variableName="emailbody"/>
+		<parse-template doc:name="Parse Template" doc:id="1009f881-882f-4505-aed6-7093ee85a21f" target="ParseTemplate">
+			<content >&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;style&gt;
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+h2 {
+	color: Purple
+}
+p{
+	color: blue
+}
+h5 {
+	color: red
+}
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;h2&gt;Gmail Implementation using parse template&lt;/h2&gt;
+&lt;h3&gt; #[vars.emailbody] &lt;/h3&gt;
+
+&lt;p&gt;Read about AnypointMQ and make POC on it. &lt;/p&gt;
+
+&lt;h5&gt; NOTE: This is an automated email, Please do not reply to this email. &lt;h5&gt;
+
+&lt;a href=&quot;https://www.mulesoft.com/resources/cloudhub/what-is-anypoint-messaging-queue&quot;&gt;Please click the link for more information&lt;/a&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+
+</content>
+		</parse-template>
+		<email:send doc:id="54f405fb-bf5d-40f7-88aa-18da1cde33fd" config-ref="Email_SMTP" subject='#["POC - AnypointMQ !!"]'>
+			<email:to-addresses >
+				<email:to-address value="praveeng2811@gmail.com" />
+			</email:to-addresses>
+			<email:body contentType="text/html" >
+				<email:content ><![CDATA[#[vars.ParseTemplate]]]></email:content>
+			</email:body>
+		</email:send>
+		<logger level="INFO" doc:name="Logger" doc:id="95c5b009-ca63-454c-bfb1-c18ab22432e6" message="---------Email sent successfully------------"/>
+	</flow>
+</mule>
